@@ -1,36 +1,63 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
+import './index.css';
 
 function App() {
-    const [data, setData] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const apiUrl = import.meta.env.VITE_API_URL || '';
-        fetch(`${apiUrl}/api/health`)
-            .then(res => res.json())
-            .then(data => setData(data))
-            .catch(err => console.error('Error fetching health check:', err));
-    }, []);
+  useEffect(() => {
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    fetch(`${apiUrl}/api/products`)
+      .then((res) => {
+        if (!res.ok) throw new Error('Network response was not ok');
+        return res.json();
+      })
+      .then((data) => {
+        setProducts(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Error fetching products:', err);
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
 
-    return (
-        <div className="container">
-            <h1>ShopSmart</h1>
-            <div className="card">
-                <h2>Backend Status</h2>
-                {data ? (
-                    <div>
-                        <p>Status: <span className="status-ok">{data.status}</span></p>
-                        <p>Message: {data.message}</p>
-                        <p>Timestamp: {data.timestamp}</p>
-                    </div>
-                ) : (
-                    <p>Loading backend status...</p>
-                )}
-            </div>
-            <p className="hint">
-                Edit <code>src/App.jsx</code> and save to test HMR
-            </p>
-        </div>
-    )
+  return (
+    <>
+      <nav className="navbar">
+        <h1>ShopSmart</h1>
+        <div className="cart-icon">🛒 Cart</div>
+      </nav>
+      <main className="container">
+        <header>
+          <h2>Featured Products</h2>
+        </header>
+
+        {loading && <p>Loading products...</p>}
+        {error && <p>Error loading products: {error}</p>}
+
+        {!loading && !error && (
+          <div className="product-grid">
+            {products.map((product) => (
+              <div key={product.id} className="product-card">
+                <img src={product.image} alt={product.name} className="product-image" />
+                <div className="product-info">
+                  <span className="product-category">{product.category}</span>
+                  <h3 className="product-name">{product.name}</h3>
+                  <div className="product-footer">
+                    <span className="product-price">${product.price}</span>
+                    <button className="btn">Add to Cart</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
+    </>
+  );
 }
 
-export default App
+export default App;
