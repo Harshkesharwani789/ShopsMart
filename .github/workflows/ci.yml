@@ -21,7 +21,7 @@ jobs:
 
       - name: Install Client Dependencies
         working-directory: client
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Install Server Dependencies
         working-directory: server
