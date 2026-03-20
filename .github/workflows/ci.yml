@@ -27,10 +27,10 @@ jobs:
           server/package-lock.json
 
     - name: Install Dependencies (Client)
-      run: cd client && npm ci
+      run: cd client && npm install
 
     - name: Install Dependencies (Server)
-      run: cd server && npm ci
+      run: cd server && npm install
 
     - name: Run Linter (Client)
       run: cd client && npm run lint
