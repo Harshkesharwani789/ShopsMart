@@ -1,7 +1,7 @@
 services:
   - type: web
     name: shopsmart-backend
-    env: node
+    runtime: node
     plan: free
     buildCommand: cd server && npm install
     startCommand: cd server && npm start
@@ -9,14 +9,3 @@ services:
       - key: PORT
         value: 10000
 
-  - type: static
-    name: shopsmart-frontend
-    env: static
-    buildCommand: cd client && npm install && npm run build
-    staticPublishPath: client/dist
-    envVars:
-      - key: VITE_API_URL
-        fromService:
-          type: web
-          name: shopsmart-backend
-          property: url
