@@ -67,6 +67,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Verify workflow is using LabRole Terraform
+        run: |
+          git rev-parse --short HEAD
+          if grep -q 'resource "aws_iam_role" "ecs_task_execution"' terraform/main.tf; then
+            echo "Old Terraform code detected. Start a fresh workflow run from the latest main branch commit."
+            exit 1
+          fi
+          grep -n 'data "aws_iam_role" "ecs_task_execution"' terraform/main.tf
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
