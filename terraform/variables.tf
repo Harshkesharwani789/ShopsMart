@@ -38,3 +38,9 @@ variable "desired_count" {
   type        = number
   default     = 2
 }
+
+variable "ecs_task_execution_role_name" {
+  description = "Existing IAM role name for ECS task execution. AWS Academy labs usually provide LabRole and often block iam:CreateRole."
+  type        = string
+  default     = "LabRole"
+}

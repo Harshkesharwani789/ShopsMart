@@ -10,6 +10,10 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
+data "aws_iam_role" "ecs_task_execution" {
+  name = var.ecs_task_execution_role_name
+}
+
 resource "random_id" "resource_suffix" {
   byte_length = 4
 }
@@ -112,28 +116,6 @@ resource "aws_cloudwatch_log_group" "backend" {
   retention_in_days = 7
 }
 
-resource "aws_iam_role" "ecs_task_execution" {
-  name = "${local.resource_prefix}-ecs-task-execution"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_task_execution" {
-  role       = aws_iam_role.ecs_task_execution.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
 resource "aws_security_group" "alb" {
   name        = "${local.resource_prefix}-alb-sg"
   description = "Allow HTTP traffic to the ShopSmart load balancer"
@@ -223,7 +205,7 @@ resource "aws_ecs_task_definition" "backend" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = 256
   memory                   = 512
-  execution_role_arn       = aws_iam_role.ecs_task_execution.arn
+  execution_role_arn       = data.aws_iam_role.ecs_task_execution.arn
 
   container_definitions = jsonencode([
     {
@@ -283,7 +265,6 @@ resource "aws_ecs_service" "backend" {
   }
 
   depends_on = [
-    aws_lb_listener.http,
-    aws_iam_role_policy_attachment.ecs_task_execution
+    aws_lb_listener.http
   ]
 }
