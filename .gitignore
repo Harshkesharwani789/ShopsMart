@@ -5,3 +5,8 @@ dist
 build
 coverage
 .vercel
+test-reports
+.terraform
+.terraform.lock.hcl
+terraform.tfstate*
+tfplan*

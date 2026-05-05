@@ -31,3 +31,22 @@ ShopSmart uses a classic client-server, decoupled architecture:
 ### Challenges
 - Integrating E2E tools (like Cypress) requires a running backend and frontend simultaneously, often tricky to coordinate seamlessly in simple CI environments.
 - Enforcing strict PR checks via linting means keeping matching ESLint configurations, which requires balancing compatibility (e.g. Vite ESLint config vs Node ESLint config standard).
+
+## AWS ECS Rubric Pipeline
+
+This project includes a GitHub Actions workflow at `.github/workflows/aws-ecs-deploy.yml` that follows the rubric order:
+
+1. Run backend and frontend tests and upload JSON test reports.
+1. Initialize, validate, plan, and apply Terraform base infrastructure.
+1. Build the backend Docker image and push it to Amazon ECR.
+1. Apply the ECS Fargate service deployment.
+1. Wait for the ECS service to become stable and print the public endpoint.
+
+Configure these repository secrets in GitHub under `Settings -> Secrets and variables -> Actions`:
+
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_SESSION_TOKEN`
+- `AWS_REGION`
+
+Terraform provisions the required S3 bucket configuration with a unique bucket name, versioning enabled, AES-256 server-side encryption enabled, and all public access blocked.
