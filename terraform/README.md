@@ -8,6 +8,7 @@ This Terraform configuration supports the project rubric by provisioning:
 - S3 public access blocking
 - ECR repository for the backend Docker image
 - ECS Fargate cluster, task definition, service, security groups, and public Application Load Balancer
+- Default VPC and default subnets lookup instead of creating a new VPC. AWS Academy labs often have low VPC quotas.
 - Existing IAM role lookup for ECS task execution. AWS Academy labs commonly use `LabRole` and block new IAM role creation.
 
 The GitHub Actions workflow applies base infrastructure first with `enable_ecs_service=false`, pushes the Docker image to ECR, then applies the ECS service with `enable_ecs_service=true`.
